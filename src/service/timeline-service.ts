@@ -52,6 +52,16 @@ export function getTimeline(): TimelineModel {
       {
         id: "4",
         text: "L'équipe est plus heureuse de 50%",
+        date: new Date("10/30/2022"),
+      },
+      {
+        id: "5",
+        text: "AHS est sorti",
+        date: new Date("10/30/2022"),
+      },
+      {
+        id: "6",
+        text: "Leroy Merlin est l'évidence habitat",
         date: new Date("11/30/2022"),
       },
     ],

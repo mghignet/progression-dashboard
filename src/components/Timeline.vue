@@ -195,8 +195,11 @@ export default defineComponent({
   z-index: 100;
   height: 190px;
 
-  &:nth-child(2n) {
+  &:nth-child(3n + 1) {
     height: 280px;
+  }
+  &:nth-child(3n + 2) {
+    height: 370px;
   }
 }
 
