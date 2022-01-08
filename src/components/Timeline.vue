@@ -1,10 +1,10 @@
 <template>
   <div class="timeline-container">
     <div class="timeline base">
-      <div class="begin-date">{{ formatDate(beginDate) }}</div>
-      <div class="end-date">{{ formatDate(endDate) }}</div>
+      <div class="begin-date">{{ formatDate(timeline.beginDate) }}</div>
+      <div class="end-date">{{ formatDate(timeline.endDate) }}</div>
       <Milestone
-        v-for="milestone in milestones"
+        v-for="milestone in timeline.milestones"
         :key="milestone.id"
         :text="milestone.text"
         :state="milestone.state"
@@ -12,7 +12,7 @@
         :style="{ left: getLeftPositionFromDate(milestone.date) }"
       />
       <Period
-        v-for="period in periods"
+        v-for="period in timeline.periods"
         :key="period.id"
         class="timeline-period"
         :title="period.text"
@@ -34,76 +34,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, PropType } from "vue";
 import Milestone from "@/components/Milestone.vue";
 import Period from "@/components/Period.vue";
 import moment from "moment";
 import { MilestoneModel } from "@/model/Milestone";
 import { PeriodModel } from "@/model/Period";
+import { TimelineModel } from "@/model/Timeline";
 import { formatDate } from "@/utils/date-utils";
 
 export default defineComponent({
   name: "Timeline",
   components: { Milestone, Period },
   props: {
-    beginDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
+    timeline: { type: Object as PropType<TimelineModel>, required: true },
     currentDate: { type: Date, required: true },
   },
   data() {
     return {
-      milestoneStateDone: MilestoneState.DONE,
-      milestoneStateWarning: MilestoneState.WARNING,
       milestones: [] as MilestoneModel[],
       periods: [] as PeriodModel[],
     };
   },
-  mounted() {
-    this.milestones.push({
-      id: "1",
-      text: "Odin est décommissionné",
-      state: MilestoneState.WARNING,
-      date: new Date("03/31/2022"),
-    });
-    this.milestones.push({
-      id: "2",
-      text: "Moins de 10% de RTs annulés",
-      state: MilestoneState.DONE,
-      date: new Date("06/30/2022"),
-    });
-    this.milestones.push({
-      id: "3",
-      text: "+40% de forfaits dans Instala",
-      date: new Date("09/30/2022"),
-    });
-    this.periods.push({
-      id: "1",
-      text: "Q1",
-      beginDate: new Date("01/01/2022"),
-      endDate: new Date("03/31/2022"),
-    });
-    this.periods.push({
-      id: "2",
-      text: "Q2",
-      beginDate: new Date("04/01/2022"),
-      endDate: new Date("06/30/2022"),
-    });
-    this.periods.push({
-      id: "3",
-      text: "Q3",
-      beginDate: new Date("07/01/2022"),
-      endDate: new Date("09/30/2022"),
-    });
-    this.periods.push({
-      id: "4",
-      text: "Q4",
-      beginDate: new Date("10/01/2022"),
-      endDate: new Date("12/31/2022"),
-    });
-  },
   computed: {
     numberOfDaysForTimeline: function () {
-      return this.getNumberOfDaysBetweenDates(this.beginDate, this.endDate);
+      return this.getNumberOfDaysBetweenDates(
+        this.timeline.beginDate,
+        this.timeline.endDate
+      );
     },
   },
   methods: {
@@ -113,7 +71,7 @@ export default defineComponent({
     },
     getLeftPositionFromDate(date: Date): string {
       const daysElapsed = this.getNumberOfDaysBetweenDates(
-        this.beginDate,
+        this.timeline.beginDate,
         date
       );
       return `${Math.min(
