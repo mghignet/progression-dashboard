@@ -11,22 +11,13 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-
-export enum MilestoneState {
-  UNKNOWN = "unknown",
-  DONE = "done",
-  WARNING = "warning",
-}
+import { MilestoneState } from "@/model/Milestone";
 
 export default defineComponent({
   name: "Milestone",
   props: {
     text: String,
-    state: {
-      type: String as PropType<MilestoneState>,
-      default: MilestoneState.UNKNOWN,
-    },
-    date: Date,
+    state: String as PropType<MilestoneState>,
   },
   methods: {
     isDone() {

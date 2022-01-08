@@ -4,23 +4,12 @@
       <div class="begin-date">{{ formatDate(beginDate) }}</div>
       <div class="end-date">{{ formatDate(endDate) }}</div>
       <Milestone
-        text="+40% de chantiers monitorés dans Instala"
-        :date="currentDate"
-        :state="milestoneStateDone"
-        class="timeline-milestone q1"
-      />
-      <Milestone
-        text="+40% de chantiers monitorés dans Instala"
-        :state="milestoneStateWarning"
-        class="timeline-milestone q2"
-      />
-      <Milestone
-        text="+40% de chantiers monitorés dans Instala"
-        class="timeline-milestone q3"
-      />
-      <Milestone
-        text="+40% de chantiers monitorés dans Instala"
-        class="timeline-milestone q4"
+        v-for="milestone in milestones"
+        :key="milestone.id"
+        :text="milestone.text"
+        :state="milestone.state"
+        class="timeline-milestone"
+        :style="{ left: getPositionFromDate(milestone.date) }"
       />
       <Period
         class="timeline-period q1"
@@ -49,9 +38,7 @@
     </div>
     <div
       class="timeline passed"
-      :style="{
-        '--progress': `${getProgressRatio(beginDate, endDate, currentDate)}%`,
-      }"
+      :style="{ '--progress': getPositionFromDate(currentDate) }"
     >
       <div class="current-date">{{ formatDate(currentDate) }}</div>
     </div>
@@ -60,23 +47,44 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import Milestone, { MilestoneState } from "@/components/Milestone.vue";
+import Milestone from "@/components/Milestone.vue";
 import Period from "@/components/Period.vue";
 import moment from "moment";
+import { MilestoneState, MilestoneModel } from "@/model/Milestone";
 
 export default defineComponent({
   name: "Timeline",
   components: { Milestone, Period },
   props: {
-    beginDate: Date,
-    endDate: Date,
-    currentDate: Date,
+    beginDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+    currentDate: { type: Date, required: true },
   },
   data() {
     return {
       milestoneStateDone: MilestoneState.DONE,
       milestoneStateWarning: MilestoneState.WARNING,
+      milestones: [] as MilestoneModel[],
     };
+  },
+  mounted() {
+    this.milestones.push({
+      id: "1",
+      text: "Odin est décommissionné",
+      state: MilestoneState.WARNING,
+      date: new Date("02/28/2022"),
+    });
+    this.milestones.push({
+      id: "2",
+      text: "Moins de 10% de RTs annulés",
+      state: MilestoneState.DONE,
+      date: new Date("05/19/2022"),
+    });
+    this.milestones.push({
+      id: "3",
+      text: "+40% de forfaits dans Instala",
+      date: new Date("10/03/2022"),
+    });
   },
   methods: {
     formatDate(date: Date): string {
@@ -86,20 +94,19 @@ export default defineComponent({
       console.log(begin, end);
       return moment(end).diff(moment(begin), "days") + 1;
     },
-    getProgressRatio(
-      beginDate: Date,
-      endDate: Date,
-      currentDate: Date
-    ): number {
-      const totalDays = this.getNumberOfDaysBetweenDates(beginDate, endDate);
-      const daysElapsed = this.getNumberOfDaysBetweenDates(
-        beginDate,
-        currentDate
+    getPositionFromDate(date: Date): string {
+      const totalDays = this.getNumberOfDaysBetweenDates(
+        this.beginDate,
+        this.endDate
       );
-      return Math.max(
+      const daysElapsed = this.getNumberOfDaysBetweenDates(
+        this.beginDate,
+        date
+      );
+      return `${Math.max(
         0,
         Math.min(100, Math.round((daysElapsed / totalDays) * 100))
-      );
+      )}%`;
     },
   },
 });
@@ -176,26 +183,10 @@ export default defineComponent({
   position: absolute;
   bottom: 30%;
   z-index: 100;
+  height: 190px;
 
-  &.q0 {
-    height: 190px;
-    left: 1%;
-  }
-  &.q1 {
+  &:nth-child(2n) {
     height: 280px;
-    left: 20%;
-  }
-  &.q2 {
-    height: 190px;
-    left: 40%;
-  }
-  &.q3 {
-    height: 280px;
-    left: 60%;
-  }
-  &.q4 {
-    height: 190px;
-    left: 80%;
   }
 }
 
