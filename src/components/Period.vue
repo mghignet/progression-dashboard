@@ -1,13 +1,14 @@
 <template>
   <div class="period-container">
     <div class="title">{{ title }}</div>
-    <div class="begin-date">{{ beginDate }}</div>
-    <div class="end-date">{{ endDate }}</div>
+    <div class="begin-date">{{ formatDate(beginDate) }}</div>
+    <div class="end-date">{{ formatDate(endDate) }}</div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { formatDate } from "@/utils/date-utils";
 
 export default defineComponent({
   name: "Period",
@@ -15,6 +16,9 @@ export default defineComponent({
     title: String,
     beginDate: String,
     endDate: String,
+  },
+  methods: {
+    formatDate,
   },
 });
 </script>

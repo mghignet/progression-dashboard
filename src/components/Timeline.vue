@@ -9,36 +9,24 @@
         :text="milestone.text"
         :state="milestone.state"
         class="timeline-milestone"
-        :style="{ left: getPositionFromDate(milestone.date) }"
+        :style="{ left: getLeftPositionFromDate(milestone.date) }"
       />
       <Period
-        class="timeline-period q1"
-        title="Q1"
-        beginDate="01/01/2022"
-        endDate="31/03/2022"
-      />
-      <Period
-        class="timeline-period q2"
-        title="Q2"
-        beginDate="01/04/2022"
-        endDate="30/06/2022"
-      />
-      <Period
-        class="timeline-period q3"
-        title="Q3"
-        beginDate="01/07/2022"
-        endDate="30/09/2022"
-      />
-      <Period
-        class="timeline-period q4"
-        title="Q4"
-        beginDate="01/10/2022"
-        endDate="31/12/2022"
+        v-for="period in periods"
+        :key="period.id"
+        class="timeline-period"
+        :title="period.text"
+        :beginDate="period.beginDate"
+        :endDate="period.endDate"
+        :style="{
+          '--left': getLeftPositionFromDate(period.beginDate),
+          '--right': getRightPositionFromDate(period.endDate),
+        }"
       />
     </div>
     <div
       class="timeline passed"
-      :style="{ '--progress': getPositionFromDate(currentDate) }"
+      :style="{ '--progress': getLeftPositionFromDate(currentDate) }"
     >
       <div class="current-date">{{ formatDate(currentDate) }}</div>
     </div>
@@ -50,7 +38,9 @@ import { defineComponent } from "vue";
 import Milestone from "@/components/Milestone.vue";
 import Period from "@/components/Period.vue";
 import moment from "moment";
-import { MilestoneState, MilestoneModel } from "@/model/Milestone";
+import { MilestoneModel } from "@/model/Milestone";
+import { PeriodModel } from "@/model/Period";
+import { formatDate } from "@/utils/date-utils";
 
 export default defineComponent({
   name: "Timeline",
@@ -65,6 +55,7 @@ export default defineComponent({
       milestoneStateDone: MilestoneState.DONE,
       milestoneStateWarning: MilestoneState.WARNING,
       milestones: [] as MilestoneModel[],
+      periods: [] as PeriodModel[],
     };
   },
   mounted() {
@@ -72,40 +63,82 @@ export default defineComponent({
       id: "1",
       text: "Odin est décommissionné",
       state: MilestoneState.WARNING,
-      date: new Date("02/28/2022"),
+      date: new Date("03/31/2022"),
     });
     this.milestones.push({
       id: "2",
       text: "Moins de 10% de RTs annulés",
       state: MilestoneState.DONE,
-      date: new Date("05/19/2022"),
+      date: new Date("06/30/2022"),
     });
     this.milestones.push({
       id: "3",
       text: "+40% de forfaits dans Instala",
-      date: new Date("10/03/2022"),
+      date: new Date("09/30/2022"),
+    });
+    this.periods.push({
+      id: "1",
+      text: "Q1",
+      beginDate: new Date("01/01/2022"),
+      endDate: new Date("03/31/2022"),
+    });
+    this.periods.push({
+      id: "2",
+      text: "Q2",
+      beginDate: new Date("04/01/2022"),
+      endDate: new Date("06/30/2022"),
+    });
+    this.periods.push({
+      id: "3",
+      text: "Q3",
+      beginDate: new Date("07/01/2022"),
+      endDate: new Date("09/30/2022"),
+    });
+    this.periods.push({
+      id: "4",
+      text: "Q4",
+      beginDate: new Date("10/01/2022"),
+      endDate: new Date("12/31/2022"),
     });
   },
+  computed: {
+    numberOfDaysForTimeline: function () {
+      return this.getNumberOfDaysBetweenDates(this.beginDate, this.endDate);
+    },
+  },
   methods: {
-    formatDate(date: Date): string {
-      return moment(date).format("DD/MM/YYYY");
+    formatDate,
+    getNumberOfDaysBetweenDates(begin: Date, end: Date): number {
+      return Math.max(0, moment(end).diff(moment(begin), "days") + 1);
     },
-    getNumberOfDaysBetweenDates(begin: Date, end: Date) {
-      console.log(begin, end);
-      return moment(end).diff(moment(begin), "days") + 1;
-    },
-    getPositionFromDate(date: Date): string {
-      const totalDays = this.getNumberOfDaysBetweenDates(
-        this.beginDate,
-        this.endDate
-      );
+    getLeftPositionFromDate(date: Date): string {
       const daysElapsed = this.getNumberOfDaysBetweenDates(
         this.beginDate,
         date
       );
-      return `${Math.max(
-        0,
-        Math.min(100, Math.round((daysElapsed / totalDays) * 100))
+      return `${Math.min(
+        100,
+        (daysElapsed / this.numberOfDaysForTimeline) * 100
+      )}%`;
+    },
+    getRightPositionFromDate(date: Date): string {
+      const daysToGo = this.getNumberOfDaysBetweenDates(
+        date,
+        this.timeline.endDate
+      );
+      return `${Math.min(
+        100,
+        (daysToGo / this.numberOfDaysForTimeline) * 100
+      )}%`;
+    },
+    getWidthFromDates(periodBegin: Date, periodEnd: Date): string {
+      const periodTotalDays = this.getNumberOfDaysBetweenDates(
+        periodBegin,
+        periodEnd
+      );
+      return `${Math.min(
+        100,
+        (periodTotalDays / this.numberOfDaysForTimeline) * 100
       )}%`;
     },
   },
@@ -201,28 +234,7 @@ export default defineComponent({
   border: 2px solid #dceffe;
   position: absolute;
   bottom: -60px;
-
-  &.q1 {
-    width: calc(25% - 20px);
-    margin: 10px;
-  }
-
-  &.q2 {
-    width: calc(25% - 20px);
-    margin: 10px;
-    left: 25%;
-  }
-
-  &.q3 {
-    width: calc(25% - 20px);
-    margin: 10px;
-    left: 50%;
-  }
-
-  &.q4 {
-    width: calc(25% - 20px);
-    margin: 10px;
-    left: 75%;
-  }
+  left: calc(var(--left) + 5px);
+  right: calc(var(--right) + 5px);
 }
 </style>
