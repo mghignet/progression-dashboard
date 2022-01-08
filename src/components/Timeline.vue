@@ -1,8 +1,11 @@
 <template>
   <div class="timeline-container">
     <div class="timeline base">
+      <div class="begin-date">{{ formatDate(beginDate) }}</div>
+      <div class="end-date">{{ formatDate(endDate) }}</div>
       <Milestone
         text="+40% de chantiers monitorés dans Instala"
+        :date="currentDate"
         :state="milestoneStateDone"
         class="timeline-milestone q1"
       />
@@ -41,11 +44,16 @@
         class="timeline-period q4"
         title="Q4"
         beginDate="01/10/2022"
-        endDate="31/12/2021"
+        endDate="31/12/2022"
       />
     </div>
-    <div class="timeline passed">
-      <div class="current-date">{{ currentDate }}</div>
+    <div
+      class="timeline passed"
+      :style="{
+        '--progress': `${getProgressRatio(beginDate, endDate, currentDate)}%`,
+      }"
+    >
+      <div class="current-date">{{ formatDate(currentDate) }}</div>
     </div>
   </div>
 </template>
@@ -59,12 +67,40 @@ import moment from "moment";
 export default defineComponent({
   name: "Timeline",
   components: { Milestone, Period },
+  props: {
+    beginDate: Date,
+    endDate: Date,
+    currentDate: Date,
+  },
   data() {
     return {
       milestoneStateDone: MilestoneState.DONE,
       milestoneStateWarning: MilestoneState.WARNING,
-      currentDate: moment().format("MM/DD/YYYY"),
     };
+  },
+  methods: {
+    formatDate(date: Date): string {
+      return moment(date).format("DD/MM/YYYY");
+    },
+    getNumberOfDaysBetweenDates(begin: Date, end: Date) {
+      console.log(begin, end);
+      return moment(end).diff(moment(begin), "days") + 1;
+    },
+    getProgressRatio(
+      beginDate: Date,
+      endDate: Date,
+      currentDate: Date
+    ): number {
+      const totalDays = this.getNumberOfDaysBetweenDates(beginDate, endDate);
+      const daysElapsed = this.getNumberOfDaysBetweenDates(
+        beginDate,
+        currentDate
+      );
+      return Math.max(
+        0,
+        Math.min(100, Math.round((daysElapsed / totalDays) * 100))
+      );
+    },
   },
 });
 </script>
@@ -95,9 +131,10 @@ export default defineComponent({
     border: 5px solid #eee;
   }
   &.passed {
-    width: 50%;
     left: 0;
     height: 90px;
+    animation: animatedProgress 1.5s ease;
+    width: var(--progress);
     background: repeating-linear-gradient(
       -45deg,
       #88cc88,
@@ -116,6 +153,29 @@ export default defineComponent({
       font-size: 12px;
     }
   }
+}
+
+@keyframes animatedProgress {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: var(--progress);
+  }
+}
+
+.begin-date,
+.end-date {
+  position: absolute;
+  font-size: 12px;
+  font-weight: bold;
+  top: -25px;
+}
+.begin-date {
+  left: 5px;
+}
+.end-date {
+  right: 5px;
 }
 
 .timeline-milestone {

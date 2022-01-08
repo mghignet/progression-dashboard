@@ -26,7 +26,7 @@ export default defineComponent({
       type: String as PropType<MilestoneState>,
       default: MilestoneState.UNKNOWN,
     },
-    date: String,
+    date: Date,
   },
   methods: {
     isDone() {

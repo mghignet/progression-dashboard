@@ -1,7 +1,11 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-year">Année 2022</div>
-    <Timeline />
+    <Timeline
+      :begin-date="timelineBeginDate"
+      :end-date="timelineEndDate"
+      :current-date="timelineCurrentDate"
+    />
   </div>
 </template>
 
@@ -12,6 +16,13 @@ import Timeline from "@/components/Timeline.vue";
 export default defineComponent({
   name: "DashboardView",
   components: { Timeline },
+  data() {
+    return {
+      timelineBeginDate: new Date("01/01/2022"),
+      timelineEndDate: new Date("12/31/2022"),
+      timelineCurrentDate: new Date("08/01/2022"),
+    };
+  },
 });
 </script>
 
