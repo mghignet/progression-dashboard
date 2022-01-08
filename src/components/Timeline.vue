@@ -135,13 +135,7 @@ export default defineComponent({
     height: 90px;
     animation: animatedProgress 1.5s ease;
     width: var(--progress);
-    background: repeating-linear-gradient(
-      -45deg,
-      #88cc88,
-      #88cc88 10px,
-      #55aa55 10px,
-      #55aa55 20px
-    );
+    background: #55aa5599;
     border-right: 8px solid #55aa55;
     box-sizing: border-box; // include the border inside the element to be more precise
 
