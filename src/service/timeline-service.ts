@@ -49,6 +49,11 @@ export function getTimeline(): TimelineModel {
         text: "+40% de forfaits dans Instala",
         date: new Date("09/30/2022"),
       },
+      {
+        id: "4",
+        text: "L'équipe est plus heureuse de 50%",
+        date: new Date("11/30/2022"),
+      },
     ],
   };
 }

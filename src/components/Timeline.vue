@@ -5,11 +5,20 @@
       <div class="end-date">{{ formatDate(timeline.endDate) }}</div>
       <Milestone
         v-for="milestone in timeline.milestones"
+        :ref="`milestone${milestone.id}`"
         :key="milestone.id"
         :text="milestone.text"
         :state="milestone.state"
         class="timeline-milestone"
-        :style="{ left: getLeftPositionFromDate(milestone.date) }"
+        :style="{
+          left: reverse(milestone)
+            ? `calc(${getLeftPositionFromDate(
+                milestone.date
+              )} - ${milestoneFlagWidth})`
+            : getLeftPositionFromDate(milestone.date),
+        }"
+        :width="milestoneFlagWidth"
+        :reverse="reverse(milestone)"
       />
       <Period
         v-for="period in timeline.periods"
@@ -54,6 +63,7 @@ export default defineComponent({
     return {
       milestones: [] as MilestoneModel[],
       periods: [] as PeriodModel[],
+      milestoneFlagWidth: "250px",
     };
   },
   computed: {
@@ -66,6 +76,15 @@ export default defineComponent({
   },
   methods: {
     formatDate,
+    reverse(milestone: MilestoneModel) {
+      return (
+        this.getNumberOfDaysBetweenDates(
+          milestone.date,
+          this.timeline.endDate
+        ) <
+        this.numberOfDaysForTimeline / 2
+      );
+    },
     getNumberOfDaysBetweenDates(begin: Date, end: Date): number {
       return Math.max(0, moment(end).diff(moment(begin), "days") + 1);
     },

@@ -1,8 +1,12 @@
 <template>
-  <div class="milestone-container">
+  <div
+    class="milestone-container"
+    :class="{ reverse: reverse }"
+    :style="{ '--width': width }"
+  >
     <div
       class="milestone-flag"
-      :class="{ done: isDone(), warning: isInWarning() }"
+      :class="{ done: isDone(), warning: isInWarning(), reverse }"
     >
       <div class="milestone-text">{{ text }}</div>
     </div>
@@ -18,6 +22,9 @@ export default defineComponent({
   props: {
     text: String,
     state: String as PropType<MilestoneState>,
+    // Hacky but it's the only way I found to be able to position the reversed flags correctly
+    width: { type: String, required: true },
+    reverse: Boolean,
   },
   methods: {
     isDone() {
@@ -33,7 +40,9 @@ export default defineComponent({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .milestone-container {
+  width: var(--width, 250px);
   position: relative;
+
   &::before {
     // pole
     content: "";
@@ -47,6 +56,7 @@ export default defineComponent({
     border-bottom-left-radius: 1px;
     border-bottom-right-radius: 1px;
   }
+
   &::after {
     // hole
     content: "";
@@ -59,15 +69,26 @@ export default defineComponent({
     background: black;
     border-radius: 7px / 4px;
   }
+
+  &.reverse {
+    &::before {
+      left: initial;
+      right: 0;
+    }
+
+    &::after {
+      left: initial;
+      right: -2px;
+    }
+  }
 }
 
 $milestone-height: 60px;
-$milestone-width: 250px;
 $flag-default-color: #f8f8f8;
 .milestone-flag {
   position: relative;
   height: $milestone-height;
-  width: $milestone-width;
+  width: 100%;
   background: $flag-default-color;
   font-size: 14px;
   font-weight: bold;
@@ -86,6 +107,16 @@ $flag-default-color: #f8f8f8;
     border-style: solid;
     border-color: $flag-default-color transparent transparent
       $flag-default-color;
+  }
+
+  &.reverse {
+    :after {
+      border-width: $milestone-height/2 0px $milestone-height/2
+        $milestone-height/2;
+      border-color: $flag-default-color $flag-default-color transparent
+        transparent;
+      left: -$milestone-height/2;
+    }
   }
 
   &.done {
