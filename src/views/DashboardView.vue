@@ -21,7 +21,7 @@ export default defineComponent({
   data() {
     return {
       timeline: null as TimelineModel | null,
-      timelineCurrentDate: new Date("08/01/2022"),
+      timelineCurrentDate: new Date(),
     };
   },
   mounted() {

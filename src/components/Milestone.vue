@@ -10,23 +10,27 @@
     >
       <div class="milestone-text">{{ text }}</div>
     </div>
+    <div class="milestone-date">{{ formatDate(date) }}</div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { MilestoneState } from "@/model/Milestone";
+import { formatDate } from "@/utils/date-utils";
 
 export default defineComponent({
   name: "Milestone",
   props: {
     text: String,
+    date: Date,
     state: String as PropType<MilestoneState>,
     // Hacky but it's the only way I found to be able to position the reversed flags correctly
     width: { type: String, required: true },
     reverse: Boolean,
   },
   methods: {
+    formatDate,
     isDone() {
       return MilestoneState.DONE === this.state;
     },
@@ -43,21 +47,22 @@ export default defineComponent({
   width: var(--width, 250px);
   position: relative;
 
-  &::before {
+  &:before {
     // pole
     content: "";
     position: absolute;
+    z-index: 1000;
     width: 3px;
     left: 0;
     top: 0;
     bottom: 1px;
     background: #eee;
-    z-index: 1;
+    z-index: -1;
     border-bottom-left-radius: 1px;
     border-bottom-right-radius: 1px;
   }
 
-  &::after {
+  &:after {
     // hole
     content: "";
     position: absolute;
@@ -90,8 +95,6 @@ $flag-default-color: #f8f8f8;
   height: $milestone-height;
   width: 100%;
   background: $flag-default-color;
-  font-size: 14px;
-  font-weight: bold;
   border-bottom: 2px solid #ddd;
 
   :after {
@@ -137,6 +140,21 @@ $flag-default-color: #f8f8f8;
 }
 
 .milestone-text {
-  padding: 10px;
+  padding-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.milestone-date {
+  position: absolute;
+  bottom: 15px;
+  left: 5px;
+  font-size: 12px;
+  transform: rotate(-45deg);
+  font-weight: bold;
+
+  .milestone-container.reverse & {
+    left: initial;
+    right: -65px;
+  }
 }
 </style>

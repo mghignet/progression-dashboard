@@ -8,6 +8,7 @@
         :ref="`milestone${milestone.id}`"
         :key="milestone.id"
         :text="milestone.text"
+        :date="milestone.date"
         :state="milestone.state"
         class="timeline-milestone"
         :style="{
@@ -134,6 +135,7 @@ export default defineComponent({
   width: 100%;
   position: absolute;
   box-sizing: border-box;
+  z-index: -1;
 
   &.base {
     width: 100%;
@@ -158,8 +160,9 @@ export default defineComponent({
 
     .current-date {
       position: absolute;
-      top: -25px;
-      left: calc(100% - 30px);
+      color: #55aa55;
+      top: 0;
+      left: calc(100% + 10px);
       font-weight: bold;
       font-size: 12px;
     }
@@ -192,7 +195,6 @@ export default defineComponent({
 .timeline-milestone {
   position: absolute;
   bottom: 30%;
-  z-index: 100;
   height: 190px;
 
   &:nth-child(3n + 1) {

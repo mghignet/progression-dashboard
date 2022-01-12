@@ -34,35 +34,35 @@ export function getTimeline(): TimelineModel {
     milestones: [
       {
         id: "1",
-        text: "Odin est décommissionné",
+        text: "Blue Team : fin",
         state: MilestoneState.WARNING,
-        date: new Date("03/31/2022"),
+        date: new Date("01/31/2022"),
       },
       {
         id: "2",
-        text: "Moins de 10% de RTs annulés",
+        text: "Team Alignment",
         state: MilestoneState.DONE,
-        date: new Date("06/30/2022"),
+        date: new Date("02/15/2022"),
       },
       {
         id: "3",
-        text: "+40% de forfaits dans Instala",
-        date: new Date("09/30/2022"),
+        text: "Initialisation des composants",
+        date: new Date("03/15/2022"),
       },
       {
         id: "4",
-        text: "L'équipe est plus heureuse de 50%",
-        date: new Date("10/30/2022"),
+        text: "Matching / exécution",
+        date: new Date("05/15/2022"),
       },
       {
         id: "5",
-        text: "AHS est sorti",
-        date: new Date("10/30/2022"),
+        text: "Facturation",
+        date: new Date("06/15/2022"),
       },
       {
         id: "6",
-        text: "Leroy Merlin est l'évidence habitat",
-        date: new Date("11/30/2022"),
+        text: "Evaluation",
+        date: new Date("07/15/2022"),
       },
     ],
   };
