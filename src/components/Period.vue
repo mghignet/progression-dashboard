@@ -6,21 +6,14 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import { formatDate } from "@/utils/date-utils";
 
-export default defineComponent({
-  name: "Period",
-  props: {
-    title: String,
-    beginDate: String,
-    endDate: String,
-  },
-  methods: {
-    formatDate,
-  },
-});
+defineProps<{
+  title: string;
+  beginDate: Date;
+  endDate: Date;
+}>();
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

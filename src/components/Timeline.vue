@@ -43,84 +43,50 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script setup lang="ts">
 import Milestone from "@/components/Milestone.vue";
 import Period from "@/components/Period.vue";
 import moment from "moment";
 import { MilestoneModel } from "@/model/Milestone";
-import { PeriodModel } from "@/model/Period";
 import { TimelineModel } from "@/model/Timeline";
 import { formatDate } from "@/utils/date-utils";
+import { computed, ref } from "vue";
 
-export default defineComponent({
-  name: "Timeline",
-  components: { Milestone, Period },
-  props: {
-    timeline: { type: Object as PropType<TimelineModel>, required: true },
-    currentDate: { type: Date, required: true },
-  },
-  data() {
-    return {
-      milestones: [] as MilestoneModel[],
-      periods: [] as PeriodModel[],
-      milestoneFlagWidth: "250px",
-    };
-  },
-  computed: {
-    numberOfDaysForTimeline: function () {
-      return this.getNumberOfDaysBetweenDates(
-        this.timeline.beginDate,
-        this.timeline.endDate
-      );
-    },
-  },
-  methods: {
-    formatDate,
-    reverse(milestone: MilestoneModel) {
-      return (
-        this.getNumberOfDaysBetweenDates(
-          milestone.date,
-          this.timeline.endDate
-        ) <
-        this.numberOfDaysForTimeline / 2
-      );
-    },
-    getNumberOfDaysBetweenDates(begin: Date, end: Date): number {
-      return Math.max(0, moment(end).diff(moment(begin), "days") + 1);
-    },
-    getLeftPositionFromDate(date: Date): string {
-      const daysElapsed = this.getNumberOfDaysBetweenDates(
-        this.timeline.beginDate,
-        date
-      );
-      return `${Math.min(
-        100,
-        (daysElapsed / this.numberOfDaysForTimeline) * 100
-      )}%`;
-    },
-    getRightPositionFromDate(date: Date): string {
-      const daysToGo = this.getNumberOfDaysBetweenDates(
-        date,
-        this.timeline.endDate
-      );
-      return `${Math.min(
-        100,
-        (daysToGo / this.numberOfDaysForTimeline) * 100
-      )}%`;
-    },
-    getWidthFromDates(periodBegin: Date, periodEnd: Date): string {
-      const periodTotalDays = this.getNumberOfDaysBetweenDates(
-        periodBegin,
-        periodEnd
-      );
-      return `${Math.min(
-        100,
-        (periodTotalDays / this.numberOfDaysForTimeline) * 100
-      )}%`;
-    },
-  },
-});
+const props = defineProps<{
+  timeline: TimelineModel;
+  currentDate: { type: Date; required: true };
+}>();
+
+const milestoneFlagWidth = ref("250px");
+
+const numberOfDaysForTimeline = computed(() =>
+  getNumberOfDaysBetweenDates(props.timeline.beginDate, props.timeline.endDate)
+);
+function reverse(milestone: MilestoneModel): boolean {
+  return (
+    getNumberOfDaysBetweenDates(milestone.date, props.timeline.endDate) <
+    numberOfDaysForTimeline.value / 2
+  );
+}
+
+function getNumberOfDaysBetweenDates(begin: Date, end: Date): number {
+  return Math.max(0, moment(end).diff(moment(begin), "days") + 1);
+}
+function getLeftPositionFromDate(date: Date): string {
+  const daysElapsed = getNumberOfDaysBetweenDates(
+    props.timeline.beginDate,
+    date
+  );
+  return `${Math.min(
+    100,
+    (daysElapsed / numberOfDaysForTimeline.value) * 100
+  )}%`;
+}
+
+function getRightPositionFromDate(date: Date): string {
+  const daysToGo = getNumberOfDaysBetweenDates(date, props.timeline.endDate);
+  return `${Math.min(100, (daysToGo / numberOfDaysForTimeline.value) * 100)}%`;
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
