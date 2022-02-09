@@ -14,31 +14,24 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script setup lang="ts">
 import { MilestoneState } from "@/model/Milestone";
 import { formatDate } from "@/utils/date-utils";
 
-export default defineComponent({
-  name: "Milestone",
-  props: {
-    text: String,
-    date: Date,
-    state: String as PropType<MilestoneState>,
-    // Hacky but it's the only way I found to be able to position the reversed flags correctly
-    width: { type: String, required: true },
-    reverse: Boolean,
-  },
-  methods: {
-    formatDate,
-    isDone() {
-      return MilestoneState.DONE === this.state;
-    },
-    isInWarning() {
-      return MilestoneState.WARNING === this.state;
-    },
-  },
-});
+const props = defineProps<{
+  text?: string;
+  date?: Date;
+  state?: MilestoneState;
+  width: string;
+  reverse?: boolean;
+}>();
+
+function isDone() {
+  return MilestoneState.DONE === props.state;
+}
+function isInWarning() {
+  return MilestoneState.WARNING === props.state;
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
